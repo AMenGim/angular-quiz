@@ -1,56 +1,39 @@
 <h2>Quiz</h2>
 <form *ngIf="!isQuizDefined" [formGroup]="roundsForm">
-  <div *ngIf="!rounds && !currentQuestion">
+  <div>
     <span
       >Selecciona el número de rondas y número de preguntas (total
       {{ quiz.length }}) por ronda:</span
     >
     <br />
     <br />
-    {{ rounds }}
-    {{ questionsPerRound }}
     <div>
-      <label>Rondas:</label
-      ><input
-        type="text"
-        name="rounds"
-        [formControlName]="rounds"
-      />
+      <label>Rondas:</label><input type="text" formControlName="rounds" />
     </div>
     <div>
       <label>Nº. preguntas:</label
-      ><input
-        type="text"
-        name="questionsPerRound"
-        [formControlName]="questionsPerRound"
-      />
+      ><input type="text" formControlName="questionsPerRound" />
     </div>
-    <button
-      *ngIf="rounds > 0 && questionsPerRound > 0"
-      (click)="submitForm()"
-    >
-      Start New Round
-    </button>
+    <button (click)="submitForm()">Start New Round</button>
   </div>
 </form>
+{{ questions | json }}
+<div *ngIf="currentQuestion">
+  <h3>{{ currentQuestion.text }}</h3>
+  <ul>
+    <li *ngFor="let selection of currentQuestion.selections">
+      <label>
+        <input type="radio" name="selection" [value]="selection.id" />
+        {{ selection.text }}
+      </label>
+    </li>
+  </ul>
+  <button (click)="submitAnswer()">Submit</button>
+</div>
 
-  <div *ngIf="currentQuestion">
-    <h3>{{ currentQuestion.text }}</h3>
-    <ul>
-      <li *ngFor="let selection of currentQuestion.selections">
-        <label>
-          <input type="radio" name="selection" [value]="selection.id" />
-          {{ selection.text }}
-        </label>
-      </li>
-    </ul>
-    <button (click)="submitAnswer()">Submit</button>
-  </div>
-
-  <div *ngIf="currentRound && !currentQuestion">
-    <h3>Round {{ currentRound }} Results</h3>
-    <p>Correct: {{ numCorrect }}</p>
-    <p>Incorrect: {{ numIncorrect }}</p>
-    <button (click)="startNewRound()">Start New Round</button>
-  </div>
-</form>
+<div *ngIf="currentRound && !currentQuestion">
+  <h3>Round {{ currentRound }} Results</h3>
+  <p>Correct: {{ numCorrect }}</p>
+  <p>Incorrect: {{ numIncorrect }}</p>
+  <button (click)="startNewRound()">Start New Round</button>
+</div>
