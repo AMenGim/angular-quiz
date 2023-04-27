@@ -57,6 +57,8 @@ export class QuizComponent implements OnInit {
       this.roundResults.push([0, 0]);
     }
     this.isQuizDefined = true;
+    this.currentQuestion =
+      this.getQuestionById(this.roundResults[0][0]) ?? quiz[0];
   }
 
   generateRandomQuestions(numQuestions: number): Question[] {

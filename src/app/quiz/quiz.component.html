@@ -17,7 +17,11 @@
     <button (click)="submitForm()">Start New Round</button>
   </div>
 </form>
-{{ questions | json }}
+<h2>
+  Ronda {{ currentRound + 1 }} / {{ roundsForm.controls['rounds'].value }} -
+  Pregunta {{ roundResults[currentRound]?.length ?? 0 }}/
+  {{ roundsForm.controls['questionsPerRound'].value }}
+</h2>
 <div *ngIf="currentQuestion">
   <h3>{{ currentQuestion.text }}</h3>
   <ul>
