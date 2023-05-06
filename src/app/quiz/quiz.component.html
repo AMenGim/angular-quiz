@@ -14,21 +14,26 @@
       <label>Nº. preguntas:</label
       ><input type="text" formControlName="questionsPerRound" />
     </div>
-    <button (click)="submitForm()">Start New Round</button>
+    <button (click)="submitForm()">Start</button>
   </div>
 </form>
 <div *ngIf="isQuizDefined">
   <h2>
-    Ronda {{ currentRound + 1 }} / {{ roundsForm.controls['rounds'].value }} -
-    Pregunta {{ roundResults[currentRound]?.length ?? 0 }}/
+    Ronda {{ currentRound + 1 }} de {{ roundsForm.controls['rounds'].value }} -
+    Pregunta {{ roundResults[currentRound]?.length ?? 0 }} de
     {{ roundsForm.controls['questionsPerRound'].value }}
   </h2>
   <div *ngIf="currentQuestion">
     <h3>{{ currentQuestion.text }}</h3>
-    <ul>
+    <ul class="no-list">
       <li *ngFor="let selection of currentQuestion.selections">
         <label>
-          <input type="radio" name="selection" [value]="selection.id" />
+          <input
+            type="radio"
+            name="selection"
+            [value]="selection.id"
+            #selectionInput
+          />
           {{ selection.text }}
         </label>
       </li>
@@ -43,3 +48,6 @@
     <button (click)="startNewRound()">Comenzar</button>
   </div>
 </div>
+{{ foo_text }}
+{{ currentRound }}
+{{ roundResults }}

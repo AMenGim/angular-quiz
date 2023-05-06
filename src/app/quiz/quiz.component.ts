@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -12,7 +12,8 @@ import { OptionEnum, Question, quiz } from '../quiz';
   templateUrl: './quiz.component.html',
   styleUrls: ['./quiz.component.css'],
 })
-export class QuizComponent implements OnInit {
+export class QuizComponent {
+  @ViewChild('selectionInput') selectionInput: ElementRef | undefined;
   quiz = quiz;
   roundsForm!: FormGroup;
   isQuizDefined: boolean = false;
@@ -24,7 +25,7 @@ export class QuizComponent implements OnInit {
   numIncorrect: number = 0;
   currentRound: number = 0;
   currentQuestion!: Question;
-  selectedOption!: OptionEnum;
+  foo_text: string = 'foo';
 
   constructor(private fb: ReactiveFormsModule) {
     this.roundsForm = new FormGroup({
@@ -38,8 +39,6 @@ export class QuizComponent implements OnInit {
       ]),
     });
   }
-
-  ngOnInit() {}
 
   submitForm() {
     this.initQuiz();
@@ -103,7 +102,26 @@ export class QuizComponent implements OnInit {
     }
   }
 
-  submitAnswer() {}
+  submitAnswer(): void {
+    const roundResult = this.roundResults[this.currentRound];
+    const question = this.currentQuestion;
+    const selectedValue = this.selectionInput?.nativeElement.value;
+
+    this.foo_text =
+      ' roundResult ->  ' +
+      roundResult +
+      ' question ->  ' +
+      JSON.stringify(question) +
+      ' selectedValue ->  ' +
+      selectedValue +
+      ' ///';
+
+    if (selectedValue == question.solution) {
+      roundResult[0]++;
+    } else {
+      roundResult[1]++;
+    }
+  }
 
   reviewAnswers(roundIndex: number): void {
     const roundQuestions = this.questions.slice(
