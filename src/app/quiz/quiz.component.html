@@ -33,13 +33,13 @@
         </label>
       </li>
     </ul>
-    <button (click)="submitAnswer()">Submit</button>
+    <button (click)="submitAnswer()">Enviar</button>
   </div>
 
-  <div *ngIf="currentRound && !currentQuestion">
-    <h3>Round {{ currentRound }} Results</h3>
-    <p>Correct: {{ numCorrect }}</p>
-    <p>Incorrect: {{ numIncorrect }}</p>
-    <button (click)="startNewRound()">Start New Round</button>
+  <div *ngIf="currentRound">
+    <h3>Resultados - Ronda {{ currentRound }}</h3>
+    <p>Correctas: {{ numCorrect }}</p>
+    <p>Incorrectas: {{ numIncorrect }}</p>
+    <button (click)="startNewRound()">Comenzar</button>
   </div>
 </div>
