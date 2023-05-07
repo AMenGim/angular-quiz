@@ -1,4 +1,3 @@
-<h2>Quiz</h2>
 <form *ngIf="!isQuizDefined" [formGroup]="roundsForm">
   <div>
     <span
@@ -24,7 +23,7 @@
     {{ roundsForm.controls['questionsPerRound'].value }}
   </h2>
   <div *ngIf="currentQuestion">
-    <h3>{{ currentQuestion.text }}</h3>
+    <h3>{{ currentQuestion.id }}. {{ currentQuestion.text }}</h3>
     <ul class="no-list">
       <li *ngFor="let selection of currentQuestion.selections">
         <label>
@@ -38,7 +37,7 @@
         </label>
       </li>
     </ul>
-    <button *ngIf="currentQuestionIndex > 0" (click)="back()">Atrás</button>
+    <button *ngIf="currentQuestionIndex > 1" (click)="back()">Atrás</button>
     <button
       *ngIf="
         currentQuestionIndex < roundsForm.controls['questionsPerRound'].value
@@ -56,6 +55,13 @@
     <button (click)="startNewRound()">Siguiente ronda</button>
   </div>
 </div>
+<br />
+<br />
+<br />
+
 {{ foo_text }}
+<br />
+<br />
+<br />
 {{ currentRound }}
-{{ roundResults }}
+{{ roundResults | json }}

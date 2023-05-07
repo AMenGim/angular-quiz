@@ -19,6 +19,7 @@ export class QuizComponent {
   isQuizDefined: boolean = false;
 
   questions!: Question[];
+  answers!: number[];
   roundResults!: [];
   numCorrect: number = 0;
   numIncorrect: number = 0;
@@ -57,51 +58,77 @@ export class QuizComponent {
     }
     this.isQuizDefined = true;
     this.currentQuestion =
-      this.getQuestionById(this.questions[0].id) ?? quiz[0];
+      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
+      quiz[0];
+    this.currentQuestionIndex++;
   }
 
   getQuestionById(id: number): Question | undefined {
     return quiz[id];
   }
 
-  submitAnswers(roundIndex: number, answers: OptionEnum[]): void {
-    const roundResult = this.roundResults[roundIndex];
-    for (let i = 0; i < answers.length; i++) {
-      const answer = answers[i];
-      const question =
-        this.questions[
-          roundIndex * this.roundsForm.controls['questionsPerRound'].value + i
-        ];
-      if (answer === question.solution) {
-        roundResult[0]++;
-      } else {
-        roundResult[1]++;
-      }
-    }
+  // submitAnswers(roundIndex: number, answers: OptionEnum[]): void {
+  //   const roundResult = this.roundResults[roundIndex];
+  //   for (let i = 0; i < answers.length; i++) {
+  //     const answer = answers[i];
+  //     const question =
+  //       this.questions[
+  //         roundIndex * this.roundsForm.controls['questionsPerRound'].value + i
+  //       ];
+  //     if (answer === question.solution) {
+  //       roundResult[0]++;
+  //     } else {
+  //       roundResult[1]++;
+  //     }
+  //   }
+  // }
+
+  next() {
+    this.submitAnswer();
+    this.currentQuestionIndex++;
+    this.currentQuestion =
+      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
+      quiz[0];
+    this.foo_text = ' fooaaaa ' + this.currentQuestion.id;
   }
 
-  next() {}
-
-  back() {}
+  back() {
+    this.submitAnswer();
+    this.currentQuestionIndex--;
+    this.currentQuestion =
+      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
+      quiz[0];
+    this.foo_text = ' fooooooo ' + this.currentQuestion.id;
+  }
 
   submitAnswer(): void {
     const roundResult = this.roundResults[this.currentRound];
-    const question = this.currentQuestion;
     const selectedValue = this.selectionInput?.nativeElement.value;
+    const globalIndex =
+      this.roundsForm.controls['questionsPerRound'].value * this.currentRound +
+      this.currentQuestionIndex;
 
     this.foo_text =
-      ' roundResult ->  ' +
-      roundResult +
+      'globalIndex ->  ' +
+      globalIndex +
+      ' answers ->  ' +
+      this.answers +
       ' question ->  ' +
-      JSON.stringify(question) +
+      JSON.stringify(this.currentQuestion) +
       ' selectedValue ->  ' +
       selectedValue +
       ' ///';
 
-    if (selectedValue == question.solution) {
+    if (selectedValue == this.currentQuestion.solution) {
       roundResult[0]++;
     } else {
       roundResult[1]++;
+    }
+
+    if (this.answers.length < globalIndex) {
+      this.answers.push(...selectedValue);
+    } else {
+      this.answers[globalIndex - 1] = selectedValue;
     }
   }
 
