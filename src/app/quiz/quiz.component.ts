@@ -18,12 +18,12 @@ export class QuizComponent {
   roundsForm!: FormGroup;
   isQuizDefined: boolean = false;
 
-  selectedQuestion!: Question;
   questions!: Question[];
-  roundResults!: number[][];
+  roundResults!: [];
   numCorrect: number = 0;
   numIncorrect: number = 0;
   currentRound: number = 0;
+  currentQuestionIndex: number = 0;
   currentQuestion!: Question;
   foo_text: string = 'foo';
 
@@ -53,33 +53,11 @@ export class QuizComponent {
         this.roundsForm.controls['questionsPerRound'].value
       );
       this.questions.push(...roundQuestions);
-      this.roundResults.push([0, 0]);
+      //this.roundResults.push([null]);
     }
     this.isQuizDefined = true;
     this.currentQuestion =
-      this.getQuestionById(this.roundResults[0][0]) ?? quiz[0];
-  }
-
-  generateRandomQuestions(numQuestions: number): Question[] {
-    const questions = [];
-    const usedIds = new Set();
-    while (questions.length < numQuestions) {
-      let randomId;
-      if (usedIds.size < this.quiz.length) {
-        do {
-          randomId = Math.floor(Math.random() * this.quiz.length) + 1;
-        } while (usedIds.has(randomId));
-      } else {
-        usedIds.clear();
-        randomId = Math.floor(Math.random() * this.quiz.length) + 1;
-      }
-      const question = this.getQuestionById(randomId);
-      if (question) {
-        questions.push(question);
-        usedIds.add(randomId);
-      }
-    }
-    return questions;
+      this.getQuestionById(this.questions[0].id) ?? quiz[0];
   }
 
   getQuestionById(id: number): Question | undefined {
@@ -101,6 +79,10 @@ export class QuizComponent {
       }
     }
   }
+
+  next() {}
+
+  back() {}
 
   submitAnswer(): void {
     const roundResult = this.roundResults[this.currentRound];
@@ -134,22 +116,34 @@ export class QuizComponent {
 
   startNewRound() {
     this.currentRound++;
+    this.currentQuestionIndex = 0;
     this.numCorrect = 0;
     this.numIncorrect = 0;
-    //this.usedQuestions = [];
-    this.loadQuestion();
+    const index =
+      this.currentRound * this.roundsForm.controls['questionsPerRound'].value;
+    this.currentQuestion =
+      this.getQuestionById(this.questions[index].id) ?? quiz[0];
   }
 
-  loadQuestion() {
-    //   const availableQuestions = this.questions.filter(question => !this.usedQuestions.includes(question.id));
-    //   if (availableQuestions.length === 0) {
-    //     this.currentQuestion = null;
-    //     return;
-    //   }
-    //   const questionIndex = Math.floor(Math.random() * availableQuestions.length);
-    //   const question = availableQuestions[questionIndex];
-    //   this.currentQuestion = question;
-    //   this.usedQuestions.push(question.id);
-    //   this.selectedOption = null;
+  private generateRandomQuestions(numQuestions: number): Question[] {
+    const questions = [];
+    const usedIds = new Set();
+    while (questions.length < numQuestions) {
+      let randomId;
+      if (usedIds.size < this.quiz.length) {
+        do {
+          randomId = Math.floor(Math.random() * this.quiz.length) + 1;
+        } while (usedIds.has(randomId));
+      } else {
+        usedIds.clear();
+        randomId = Math.floor(Math.random() * this.quiz.length) + 1;
+      }
+      const question = this.getQuestionById(randomId);
+      if (question) {
+        questions.push(question);
+        usedIds.add(randomId);
+      }
+    }
+    return questions;
   }
 }

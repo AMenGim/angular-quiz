@@ -20,7 +20,7 @@
 <div *ngIf="isQuizDefined">
   <h2>
     Ronda {{ currentRound + 1 }} de {{ roundsForm.controls['rounds'].value }} -
-    Pregunta {{ roundResults[currentRound]?.length ?? 0 }} de
+    Pregunta {{ currentQuestionIndex }} de
     {{ roundsForm.controls['questionsPerRound'].value }}
   </h2>
   <div *ngIf="currentQuestion">
@@ -38,14 +38,22 @@
         </label>
       </li>
     </ul>
-    <button (click)="submitAnswer()">Enviar</button>
+    <button *ngIf="currentQuestionIndex > 0" (click)="back()">Atrás</button>
+    <button
+      *ngIf="
+        currentQuestionIndex < roundsForm.controls['questionsPerRound'].value
+      "
+      (click)="next()"
+    >
+      Siguiente
+    </button>
   </div>
 
   <div *ngIf="currentRound">
     <h3>Resultados - Ronda {{ currentRound }}</h3>
     <p>Correctas: {{ numCorrect }}</p>
     <p>Incorrectas: {{ numIncorrect }}</p>
-    <button (click)="startNewRound()">Comenzar</button>
+    <button (click)="startNewRound()">Siguiente ronda</button>
   </div>
 </div>
 {{ foo_text }}
