@@ -5,7 +5,7 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { OptionEnum, Question, quiz } from '../quiz';
+import { Question, quiz, Round } from '../quiz';
 
 @Component({
   selector: 'app-quiz',
@@ -20,9 +20,7 @@ export class QuizComponent {
 
   questions!: Question[];
   answers: number[] = [];
-  roundResults!: [];
-  numCorrect: number = 0;
-  numIncorrect: number = 0;
+  results!: Round[];
   currentRound: number = 0;
   currentQuestionIndex: number = 0;
   currentQuestion!: Question;
@@ -48,40 +46,24 @@ export class QuizComponent {
   initQuiz(): void {
     // generar preguntas aleatorias para cada ronda
     this.questions = [];
-    this.roundResults = [];
+    this.results = [];
     for (let i = 0; i < this.roundsForm.controls['rounds'].value; i++) {
       const roundQuestions = this.generateRandomQuestions(
         this.roundsForm.controls['questionsPerRound'].value
       );
       this.questions.push(...roundQuestions);
-      //this.roundResults.push([null]);
+      this.results.push({ ok: 0, ko: 0 });
     }
     this.isQuizDefined = true;
-    this.currentQuestion =
-      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
-      quiz[0];
+    this.currentQuestion = this.getQuestionById(
+      this.questions[this.currentQuestionIndex].id
+    );
     this.currentQuestionIndex++;
   }
 
-  getQuestionById(id: number): Question | undefined {
+  getQuestionById(id: number): Question {
     return quiz[id];
   }
-
-  // submitAnswers(roundIndex: number, answers: OptionEnum[]): void {
-  //   const roundResult = this.roundResults[roundIndex];
-  //   for (let i = 0; i < answers.length; i++) {
-  //     const answer = answers[i];
-  //     const question =
-  //       this.questions[
-  //         roundIndex * this.roundsForm.controls['questionsPerRound'].value + i
-  //       ];
-  //     if (answer === question.solution) {
-  //       roundResult[0]++;
-  //     } else {
-  //       roundResult[1]++;
-  //     }
-  //   }
-  // }
 
   move(isNext: boolean) {
     const globalIndex =
@@ -89,19 +71,33 @@ export class QuizComponent {
       this.currentQuestionIndex;
     this.submitAnswer(globalIndex);
     isNext ? this.currentQuestionIndex++ : this.currentQuestionIndex--;
-    this.currentQuestion =
-      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
-      quiz[0];
+    this.currentQuestion = this.getQuestionById(
+      this.questions[this.currentQuestionIndex].id
+    );
 
     //? SEt prev answer
     //this.selectionInput?.nativeElement.value = this.answers[globalIndex - 1]
   }
 
   submitAnswer(globalIndex: number): void {
-    const roundResult = this.roundResults[this.currentRound];
+    const roundResult = this.results[this.currentRound];
     const selectedValue = this.selectionInput?.nativeElement.value;
 
+    if (selectedValue == this.currentQuestion.solution) {
+      roundResult.ok++;
+    } else {
+      roundResult.ko++;
+    }
+
+    if (this.answers.length < globalIndex) {
+      this.answers.push(...selectedValue);
+    } else {
+      this.answers[globalIndex - 1] = selectedValue;
+    }
+
     this.foo_text =
+      'roundResult ->  ' +
+      roundResult +
       'globalIndex ->  ' +
       globalIndex +
       ' answers ->  ' +
@@ -111,38 +107,25 @@ export class QuizComponent {
       ' selectedValue ->  ' +
       selectedValue +
       ' ///';
-
-    // if (selectedValue == this.currentQuestion.solution) {
-    //   roundResult[0]++;
-    // } else {
-    //   roundResult[1]++;
-    // }
-
-    if (this.answers.length < globalIndex) {
-      this.answers.push(...selectedValue);
-    } else {
-      this.answers[globalIndex - 1] = selectedValue;
-    }
   }
+
+  endRound() {}
 
   reviewAnswers(roundIndex: number): void {
     const roundQuestions = this.questions.slice(
       roundIndex * this.roundsForm.controls['questionsPerRound'].value,
       (roundIndex + 1) * this.roundsForm.controls['questionsPerRound'].value
     );
-    const roundAnswers = this.roundResults[roundIndex];
+    const roundAnswers = this.results[roundIndex];
     // Mostrar las preguntas y respuestas correctas e incorrectas al usuario
   }
 
   startNewRound() {
     this.currentRound++;
     this.currentQuestionIndex = 0;
-    this.numCorrect = 0;
-    this.numIncorrect = 0;
     const index =
       this.currentRound * this.roundsForm.controls['questionsPerRound'].value;
-    this.currentQuestion =
-      this.getQuestionById(this.questions[index].id) ?? quiz[0];
+    this.currentQuestion = this.getQuestionById(this.questions[index].id);
   }
 
   private generateRandomQuestions(numQuestions: number): Question[] {

@@ -10,6 +10,11 @@ export interface Selection {
   text: string;
 }
 
+export interface Round {
+  ok: number;
+  ko: number;
+}
+
 export enum OptionEnum {
   A,
   B,

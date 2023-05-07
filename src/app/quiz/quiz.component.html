@@ -23,37 +23,52 @@
     {{ roundsForm.controls['questionsPerRound'].value }}
   </h2>
   <div *ngIf="currentQuestion">
-    <h3>{{ currentQuestion.id }}. {{ currentQuestion.text }}</h3>
-    <ul class="no-list">
-      <li *ngFor="let selection of currentQuestion.selections">
-        <label>
-          <input
-            type="radio"
-            name="selection"
-            [value]="selection.id"
-            #selectionInput
-          />
-          {{ selection.text }}
-        </label>
-      </li>
-    </ul>
+    <ng-container
+      *ngIf="
+        currentQuestionIndex <=
+        this.roundsForm.controls['questionsPerRound'].value
+      "
+    >
+      <h3>{{ currentQuestion.id }}. {{ currentQuestion.text }}</h3>
+      <ul class="no-list">
+        <li *ngFor="let selection of currentQuestion.selections">
+          <label>
+            <input
+              type="radio"
+              name="selection"
+              [value]="selection.id"
+              #selectionInput
+            />
+            {{ selection.text }}
+          </label>
+        </li>
+      </ul>
+    </ng-container>
     <button *ngIf="currentQuestionIndex > 1" (click)="move(false)">
       Atrás
     </button>
     <button
       *ngIf="
-        currentQuestionIndex < roundsForm.controls['questionsPerRound'].value
+        currentQuestionIndex <= roundsForm.controls['questionsPerRound'].value
       "
       (click)="move(true)"
     >
       Siguiente
     </button>
+    <button
+      *ngIf="
+        currentQuestionIndex > roundsForm.controls['questionsPerRound'].value
+      "
+      (click)="endRound()"
+    >
+      Terminar ronda
+    </button>
   </div>
 
-  <div *ngIf="currentRound">
-    <h3>Resultados - Ronda {{ currentRound }}</h3>
-    <p>Correctas: {{ numCorrect }}</p>
-    <p>Incorrectas: {{ numIncorrect }}</p>
+  <div>
+    <h3>Resultados - Ronda {{ currentRound + 1 }}</h3>
+    <p>Correctas: {{ results[currentRound].ok }}</p>
+    <p>Incorrectas: {{ results[currentRound].ko }}</p>
     <button (click)="startNewRound()">Siguiente ronda</button>
   </div>
 </div>
@@ -66,4 +81,4 @@
 <br />
 <br />
 {{ currentRound }}
-{{ roundResults | json }}
+{{ results | json }}
