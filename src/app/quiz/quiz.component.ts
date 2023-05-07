@@ -19,7 +19,7 @@ export class QuizComponent {
   isQuizDefined: boolean = false;
 
   questions!: Question[];
-  answers!: number[];
+  answers: number[] = [];
   roundResults!: [];
   numCorrect: number = 0;
   numIncorrect: number = 0;
@@ -83,30 +83,23 @@ export class QuizComponent {
   //   }
   // }
 
-  next() {
-    this.submitAnswer();
-    this.currentQuestionIndex++;
-    this.currentQuestion =
-      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
-      quiz[0];
-    this.foo_text = ' fooaaaa ' + this.currentQuestion.id;
-  }
-
-  back() {
-    this.submitAnswer();
-    this.currentQuestionIndex--;
-    this.currentQuestion =
-      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
-      quiz[0];
-    this.foo_text = ' fooooooo ' + this.currentQuestion.id;
-  }
-
-  submitAnswer(): void {
-    const roundResult = this.roundResults[this.currentRound];
-    const selectedValue = this.selectionInput?.nativeElement.value;
+  move(isNext: boolean) {
     const globalIndex =
       this.roundsForm.controls['questionsPerRound'].value * this.currentRound +
       this.currentQuestionIndex;
+    this.submitAnswer(globalIndex);
+    isNext ? this.currentQuestionIndex++ : this.currentQuestionIndex--;
+    this.currentQuestion =
+      this.getQuestionById(this.questions[this.currentQuestionIndex].id) ??
+      quiz[0];
+
+    //? SEt prev answer
+    //this.selectionInput?.nativeElement.value = this.answers[globalIndex - 1]
+  }
+
+  submitAnswer(globalIndex: number): void {
+    const roundResult = this.roundResults[this.currentRound];
+    const selectedValue = this.selectionInput?.nativeElement.value;
 
     this.foo_text =
       'globalIndex ->  ' +
@@ -119,11 +112,11 @@ export class QuizComponent {
       selectedValue +
       ' ///';
 
-    if (selectedValue == this.currentQuestion.solution) {
-      roundResult[0]++;
-    } else {
-      roundResult[1]++;
-    }
+    // if (selectedValue == this.currentQuestion.solution) {
+    //   roundResult[0]++;
+    // } else {
+    //   roundResult[1]++;
+    // }
 
     if (this.answers.length < globalIndex) {
       this.answers.push(...selectedValue);

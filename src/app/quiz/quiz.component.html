@@ -37,12 +37,14 @@
         </label>
       </li>
     </ul>
-    <button *ngIf="currentQuestionIndex > 1" (click)="back()">Atrás</button>
+    <button *ngIf="currentQuestionIndex > 1" (click)="move(false)">
+      Atrás
+    </button>
     <button
       *ngIf="
         currentQuestionIndex < roundsForm.controls['questionsPerRound'].value
       "
-      (click)="next()"
+      (click)="move(true)"
     >
       Siguiente
     </button>
